@@ -29,19 +29,31 @@ class TrafficLight:
 
     def running(self):
         self.__timer.cancel()
-        if self.__light_number == 2:
-            self.__light_number = 0
-        else:
-            self.__light_number += 1
+        self.next_light()
         light = self.__lights[self.__light_number]
         print(f'{time.time()}:light_number = {self.__light_number} {light}')
         self.__timer = threading.Timer(light.duration, self.running)
         self.__timer.start()
 
+    def next_light(self):
+        before_light = self.__light_number
+        # Выбор следующего цвета
+        if self.__light_number == 2:
+            self.__light_number = 0
+        else:
+            self.__light_number += 1
+        # Проверка правильности переключения светофора
+        if (self.__light_number == 2 and before_light != 1) or \
+            (self.__light_number == 1 and before_light != 0) or \
+            (self.__light_number == 0 and before_light != 2):
+            print("Неправильный порядок переключения светофора!")
+            exit()
+
     def __init__(self):
-        self.__lights[0] = SingleLight(Color.RED, 7)
-        self.__lights[1] = SingleLight(Color.YELLOW, 2)
-        self.__lights[2] = SingleLight(Color.GREEN, 5)
+        self.__lights = [
+            SingleLight(Color.RED, 7),
+            SingleLight(Color.YELLOW, 2),
+            SingleLight(Color.GREEN, 5)]
         self.__timer = threading.Timer(self.__lights[1].duration, self.running)
         self.__timer.start()
 
